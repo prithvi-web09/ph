@@ -1,64 +1,27 @@
-// ======= GSAP Intro Animations =======
+// GSAP Intro Animations
 gsap.timeline()
-  .from(".logo", {
-    y: -40,
-    opacity: 0,
-    duration: 1.2,
-    ease: "back.out(1.7)"
-  })
-  .from("#page1 h1", {
-    opacity: 0,
-    scale: 0.9,
-    y: 30,
-    duration: 1,
-    ease: "power3.out"
-  }, "-=0.4")
-  .from("#page1 p", {
-    opacity: 0,
-    y: 20,
-    duration: 0.8,
-    ease: "power2.out"
-  }, "-=0.4")
-  .from(".credits-wrapper", {
-    opacity: 0,
-    y: 40,
-    duration: 1.2,
-    ease: "elastic.out(1, 0.5)"
-  }, "-=0.5");
+  .from(".logo", { y: -40, opacity: 0, duration: 1.2, ease: "back.out(1.7)" })
+  .from("#page1 h1", { opacity: 0, scale: 0.9, y: 30, duration: 1, ease: "power3.out" }, "-=0.4")
+  .from("#page1 p", { opacity: 0, y: 20, duration: 0.8, ease: "power2.out" }, "-=0.4")
+  .from(".credits-wrapper", { opacity: 0, y: 40, duration: 1.2, ease: "elastic.out(1, 0.5)" }, "-=0.5");
 
-// Floating logo animation
-gsap.to(".logo", {
-  y: 10,
-  repeat: -1,
-  yoyo: true,
-  duration: 2,
-  ease: "sine.inOut"
-});
+gsap.to(".logo", { y: 10, repeat: -1, yoyo: true, duration: 2, ease: "sine.inOut" });
 
-// ======= Continuous Name Scroll =======
+// Seamless scrolling group names
 const names = document.querySelector(".group-names");
-names.innerHTML += names.innerHTML; // Duplicate for seamless loop
+names.innerHTML += names.innerHTML;
 const namesWidth = names.scrollWidth / 2;
 
-gsap.to(".group-names", {
-  x: -namesWidth,
-  repeat: -1,
-  duration: 25,
-  ease: "none"
-});
+gsap.to(".group-names", { x: -namesWidth, repeat: -1, duration: 25, ease: "none" });
 
-// ======= Smooth Scroll on Wheel =======
+// Scroll animation to Page 2
 document.addEventListener("wheel", (e) => {
   if (e.deltaY > 0) {
-    gsap.to(window, {
-      scrollTo: "#page2",
-      duration: 0.5,
-      ease: "power2.inOut"
-    });
+    gsap.to(window, { scrollTo: "#page2", duration: 1.5, ease: "power2.inOut" });
   }
 });
 
-// ======= Section Scroll Animations =======
+// Section fade-in animations
 gsap.utils.toArray(".sec-container div").forEach((section, i) => {
   gsap.from(section, {
     scrollTrigger: {
@@ -75,14 +38,11 @@ gsap.utils.toArray(".sec-container div").forEach((section, i) => {
   });
 });
 
-// ======= SPACE BACKGROUND ANIMATION =======
-const canvas = document.getElementById("space");
+// 🌌 Starfield Background (for all pages)
+const canvas = document.getElementById("starfield");
 const ctx = canvas.getContext("2d");
-let w, h;
-let stars = [];
-let shootingStars = [];
+let w, h, stars = [], shootingStars = [];
 
-// Resize canvas dynamically
 function resize() {
   w = canvas.width = window.innerWidth;
   h = canvas.height = window.innerHeight;
@@ -90,33 +50,32 @@ function resize() {
 window.addEventListener("resize", resize);
 resize();
 
-// Generate stars
-for (let i = 0; i < 150; i++) {
+// Create stars
+for (let i = 0; i < 180; i++) {
   stars.push({
     x: Math.random() * w,
     y: Math.random() * h,
-    radius: Math.random() * 1.2,
+    radius: Math.random() * 1.3,
     alpha: Math.random(),
-    twinkleSpeed: 0.02 + Math.random() * 0.08
+    twinkleSpeed: 0.015 + Math.random() * 0.03
   });
 }
 
 // Draw stars
 function drawStars() {
-  ctx.clearRect(0, 0, w, h);
   for (let star of stars) {
     star.alpha += star.twinkleSpeed * (Math.random() > 0.5 ? 1 : -1);
     star.alpha = Math.max(0.2, Math.min(1, star.alpha));
     ctx.globalAlpha = star.alpha;
-    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
     ctx.beginPath();
     ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+    ctx.fillStyle = "white";
     ctx.fill();
   }
   ctx.globalAlpha = 1;
 }
 
-// Create shooting stars
+// Shooting stars
 function spawnShootingStar() {
   const startX = Math.random() * w;
   const startY = Math.random() * h * 0.5;
@@ -125,7 +84,6 @@ function spawnShootingStar() {
   shootingStars.push({ x: startX, y: startY, len: length, speed });
 }
 
-// Draw shooting stars
 function drawShootingStars() {
   for (let i = shootingStars.length - 1; i >= 0; i--) {
     const s = shootingStars[i];
@@ -144,7 +102,7 @@ function drawShootingStars() {
   }
 }
 
-// Animate background
+// Animate all
 function animate() {
   ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
   ctx.fillRect(0, 0, w, h);
@@ -154,19 +112,15 @@ function animate() {
 }
 animate();
 
-// Spawn shooting stars occasionally
 setInterval(() => {
   if (Math.random() > 0.7) spawnShootingStar();
 }, 3000);
 
-// ======= MOUSE PARALLAX =======
-document.addEventListener("mousemove", (e) => {
-  const offsetX = (e.clientX / window.innerWidth - 0.5) * 20;
-  const offsetY = (e.clientY / window.innerHeight - 0.5) * 20;
-  gsap.to("header, #page1", {
-    x: offsetX,
-    y: offsetY,
-    duration: 1,
-    ease: "power2.out"
+// Light parallax for desktop
+if (window.innerWidth > 768) {
+  document.addEventListener("mousemove", (e) => {
+    const offsetX = (e.clientX / window.innerWidth - 0.5) * 20;
+    const offsetY = (e.clientY / window.innerHeight - 0.5) * 20;
+    gsap.to("header, #page1", { x: offsetX, y: offsetY, duration: 1, ease: "power2.out" });
   });
-});
+}
