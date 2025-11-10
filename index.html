@@ -38,13 +38,73 @@
   <section id="page2">
     <div class="sec-container">
       <div class="sec-1"><h1>🪐 Gravitational Orbit Simulation</h1></div>
-      <div class="sec-2"><h1>🚗 Doppler Effect Simulation</h1></div>
-      <div class="sec-3"><h1>🌪 Fluid Flow Around an Object</h1></div>
       <div class="sec-4"><h1>🔦 Double Slit Interference</h1></div>
-      <div class="sec-5"><h1>🌀 Chaotic Double Pendulum</h1></div>
       <div class="sec-6"><h1>🧲 Magnetic Field Lines Around a Current-Carrying Wire</h1></div>
     </div>
   </section>
+
+ <!-- Gravitational Orbit Simulation -->
+
+  <!-- 🌌 Gravitational Orbit Simulation Popup -->
+<div id="grav-popup" class="popup" aria-hidden="true">
+  <video autoplay loop muted id="gravity-video">
+    <source src="gravity-bg.mp4" type="video/mp4" />
+  </video>
+
+  <div class="popup-content" role="dialog" aria-modal="true" aria-labelledby="grav-title">
+    <h2 id="grav-title">🪐 Gravitational Orbit Simulation</h2>
+
+    <div class="input-group">
+      <label>Mass of Sun:</label>
+      <input type="text" id="mass-sun" placeholder="Let be an integer or choose option" />
+      <div class="options-row">
+        <button class="option-btn">0.25 times</button>
+        <button class="option-btn">0.5 times</button>
+        <button class="option-btn">Original</button>
+        <button class="option-btn">1.5 times</button>
+        <button class="option-btn">2 times</button>
+        <button class="option-btn">3 times</button>
+      </div>
+
+      <label>Mass of Earth:</label>
+      <input type="text" id="mass-earth" placeholder="Let be an integer or choose option" />
+      <div class="options-row">
+        <button class="option-btn">0.25 times</button>
+        <button class="option-btn">0.5 times</button>
+        <button class="option-btn">Original</button>
+        <button class="option-btn">1.5 times</button>
+        <button class="option-btn">2 times</button>
+        <button class="option-btn">3 times</button>
+      </div>
+
+      <label>Mass of Moon:</label>
+      <input type="text" id="mass-moon" placeholder="Let be an integer or choose option" />
+      <div class="options-row">
+        <button class="option-btn">0.25 times</button>
+        <button class="option-btn">0.5 times</button>
+        <button class="option-btn">Original</button>
+        <button class="option-btn">1.5 times</button>
+        <button class="option-btn">2 times</button>
+        <button class="option-btn">3 times</button>
+      </div>
+
+      <div class="sim-controls">
+        <button id="calculate">Simulate Orbit</button>
+        <button id="pause-resume">Pause</button>
+        <button id="reset-sim">Reset</button>
+      </div>
+
+      <p id="result"></p>
+    </div>
+
+    <!-- Canvas for orbits -->
+    <div class="canvas-wrap">
+      <canvas id="orbit-canvas" width="1000" height="600" aria-label="Orbit simulation canvas"></canvas>
+    </div>
+
+    <button id="close-popup">Close</button>
+  </div>
+</div>
 
   <!-- GSAP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
