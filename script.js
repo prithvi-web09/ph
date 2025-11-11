@@ -209,7 +209,7 @@ allLabels.forEach((label) => {
 });
 
 // -------------------------
-// Orbit simulation logic
+// Solar System simulation logic (canvas)
 // -------------------------
 const canvas = document.getElementById("orbit-canvas");
 const ctx = canvas.getContext("2d");
@@ -220,73 +220,110 @@ let lastTime = 0;
 let simTime = 0;
 let rafId = null;
 
-// physical (visual) constants for nice appearance
-const PIXEL_SCALE = 1; // keep for possible scaling
-const G = 0.08; // scaled gravitational constant for visualization
-
-// base distances (visual)
-const BASE_SUN_RADIUS = 24;
-const BASE_EARTH_ORBIT = 180; // pixels from center
-const BASE_EARTH_RADIUS = 10;
-const BASE_MOON_ORBIT = 38;
-const BASE_MOON_RADIUS = 4;
+// scaled gravitational constant (visual)
+const G = 0.06; // tuned for aesthetic motion
 
 // default masses (relative unit)
 const DEFAULT_SUN_MASS = 1000; // visualized unit
-const DEFAULT_EARTH_MASS = 1;
-const DEFAULT_MOON_MASS = 0.0123;
 
 let simParams = {
-  sunMass: DEFAULT_SUN_MASS,
-  earthMass: DEFAULT_EARTH_MASS,
-  moonMass: DEFAULT_MOON_MASS
+  sunMass: DEFAULT_SUN_MASS
 };
 
 // UI elements
 const massSunInput = document.getElementById("mass-sun");
-const massEarthInput = document.getElementById("mass-earth");
-const massMoonInput = document.getElementById("mass-moon");
 const calculateBtn = document.getElementById("calculate");
 const pauseBtn = document.getElementById("pause-resume");
 const resetBtn = document.getElementById("reset-sim");
 const resultP = document.getElementById("result");
 
-// utility: parse input like "0.5 times" or "Original"
+// helper to parse values like "0.5 times" or "Original"
 function parseMassInput(value, defaultVal) {
   if (!value) return defaultVal;
   value = value.toString().trim().toLowerCase();
   if (value.includes("original")) return defaultVal;
-  if (value.includes("times")) {
-    const num = parseFloat(value);
+  // "0.5 times" -> parseFloat gives 0.5
+  const timesMatch = value.match(/([0-9]*\.?[0-9]+)\s*times?/);
+  if (timesMatch) {
+    const num = parseFloat(timesMatch[1]);
     if (!isNaN(num) && num > 0) return defaultVal * num;
   }
-  // if user typed number directly
+  // if user typed a number directly
   const asNum = parseFloat(value);
   if (!isNaN(asNum)) return asNum;
   return defaultVal;
 }
 
-// compute circular angular speed for radius r given central mass M: w = sqrt(G*M/r^3)
+// angular speed for circular orbit: w = sqrt(G*M / r^3)
 function angularSpeed(M, r) {
   return Math.sqrt((G * M) / (r * r * r));
 }
 
-// visual speed factors (use consistent named constants)
-const EARTH_VISUAL_FACTOR = 1.6 * 50;
-const MOON_VISUAL_FACTOR = 3.6 * 50;
+// planets config (aesthetic visual distances & sizes)
+const planets = [
+  { name: "Mercury", color: "#c7c7c7", orbitRadius: 52, radius: 4.5, initialAngle: Math.random() * Math.PI * 2 },
+  { name: "Venus",   color: "#e7c56a", orbitRadius: 86, radius: 7,   initialAngle: Math.random() * Math.PI * 2 },
+  { name: "Earth",   color: "#7fbfff", orbitRadius: 120, radius: 8.5, initialAngle: Math.random() * Math.PI * 2 },
+  { name: "Mars",    color: "#f08b66", orbitRadius: 154, radius: 6.5, initialAngle: Math.random() * Math.PI * 2 },
+  { name: "Jupiter", color: "#f4d9b6", orbitRadius: 208, radius: 14,  initialAngle: Math.random() * Math.PI * 2 },
+  { name: "Saturn",  color: "#edd5a0", orbitRadius: 270, radius: 12,  initialAngle: Math.random() * Math.PI * 2 },
+  { name: "Uranus",  color: "#bfe9f4", orbitRadius: 320, radius: 10,  initialAngle: Math.random() * Math.PI * 2 },
+  { name: "Neptune", color: "#9bbcf0", orbitRadius: 370, radius: 10,  initialAngle: Math.random() * Math.PI * 2 }
+];
+
+// state
+let state = {
+  angles: planets.map(p => p.initialAngle),
+  orbitRadii: planets.map(p => p.orbitRadius)
+};
+
+// visual speed multiplier to make motion pleasant (tweak for look)
+const VISUAL_SPEED_MULT = 40; // higher = faster orbits
+
+// devicePixelRatio friendly resize
+function resizeCanvasToParent() {
+  const rect = canvas.getBoundingClientRect();
+  // keep canvas within the popup's canvas-wrap max width; limit pixel dimensions
+  const targetWidth = Math.min(760, rect.width);
+  const targetHeight = Math.min(460, targetWidth * 0.6);
+  // set actual canvas pixel size for crispness
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.round(targetWidth * dpr);
+  canvas.height = Math.round(targetHeight * dpr);
+  canvas.style.width = `${targetWidth}px`;
+  canvas.style.height = `${targetHeight}px`;
+  // scale drawing operations
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+window.addEventListener("resize", () => {
+  resizeCanvasToParent();
+});
+resizeCanvasToParent();
 
 // draw helpers
 function drawBackground() {
-  const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  grad.addColorStop(0, "rgba(6,6,12,0.6)");
+  const cw = canvas.width / (window.devicePixelRatio || 1);
+  const ch = canvas.height / (window.devicePixelRatio || 1);
+  const grad = ctx.createLinearGradient(0, 0, 0, ch);
+  grad.addColorStop(0, "rgba(6,6,12,0.65)");
   grad.addColorStop(1, "rgba(3,3,9,0.6)");
   ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillRect(0, 0, cw, ch);
+
+  // subtle star scatter (canvas-local)
+  for (let i = 0; i < 20; i++) {
+    const x = Math.random() * cw;
+    const y = Math.random() * ch;
+    ctx.globalAlpha = 0.03;
+    ctx.fillStyle = "white";
+    ctx.fillRect(x, y, 1, 1);
+  }
+  ctx.globalAlpha = 1;
 }
 
 function drawOrbit(cx, cy, radius) {
   ctx.beginPath();
-  ctx.strokeStyle = "rgba(255,255,255,0.06)";
+  ctx.strokeStyle = "rgba(255,255,255,0.05)";
   ctx.lineWidth = 1;
   ctx.setLineDash([4, 6]);
   ctx.arc(cx, cy, radius, 0, Math.PI * 2);
@@ -294,127 +331,123 @@ function drawOrbit(cx, cy, radius) {
   ctx.setLineDash([]);
 }
 
-function drawSun(x, y, r) {
-  const glow = ctx.createRadialGradient(x, y, r * 0.2, x, y, r * 3);
-  glow.addColorStop(0, "rgba(255,210,120,1)");
-  glow.addColorStop(0.2, "rgba(255,180,60,0.55)");
-  glow.addColorStop(1, "rgba(255,180,60,0)");
-  ctx.fillStyle = glow;
+function drawSun(cx, cy, r) {
+  // glow
+  const grd = ctx.createRadialGradient(cx, cy, r * 0.2, cx, cy, r * 3.2);
+  grd.addColorStop(0, "rgba(255,225,140,1)");
+  grd.addColorStop(0.2, "rgba(255,180,60,0.6)");
+  grd.addColorStop(0.7, "rgba(255,140,40,0.08)");
+  ctx.fillStyle = grd;
   ctx.beginPath();
-  ctx.arc(x, y, r * 2.2, 0, Math.PI * 2);
+  ctx.arc(cx, cy, r * 2.8, 0, Math.PI * 2);
   ctx.fill();
 
+  // core
   ctx.fillStyle = "#ffd27a";
   ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawPlanet(x, y, r, color) {
+  // subtle shadow
+  ctx.beginPath();
+  ctx.fillStyle = "rgba(0,0,0,0.12)";
+  ctx.ellipse(x + r * 0.45, y + r * 0.45, r * 0.9, r * 0.5, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // body
+  ctx.beginPath();
+  ctx.fillStyle = color;
   ctx.arc(x, y, r, 0, Math.PI * 2);
   ctx.fill();
-}
 
-function drawBody(x, y, radius, color) {
-  ctx.fillStyle = color;
+  // rim highlight
   ctx.beginPath();
-  ctx.arc(x, y, radius, 0, Math.PI * 2);
-  ctx.fill();
+  ctx.strokeStyle = "rgba(255,255,255,0.12)";
+  ctx.lineWidth = 0.8;
+  ctx.stroke();
 }
 
-// state for current simulation
-let state = {
-  // angles in radians
-  earthAngle: 0,
-  moonAngle: 0,
-  earthOrbitRadius: BASE_EARTH_ORBIT,
-  moonOrbitRadius: BASE_MOON_ORBIT
-};
-
-function resizeCanvasToParent() {
-  const rect = canvas.getBoundingClientRect();
-  canvas.width = Math.min(760, rect.width * devicePixelRatio);
-  canvas.height = Math.min(460, 460 * devicePixelRatio);
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.scale(1 / devicePixelRatio, 1 / devicePixelRatio);
+// small label
+function drawLabel(text, x, y) {
+  ctx.font = "12px Poppins, sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.9)";
+  ctx.textAlign = "left";
+  ctx.fillText(text, x + 8, y - 6);
 }
-window.addEventListener("resize", () => {
-  resizeCanvasToParent();
-});
-resizeCanvasToParent();
 
-// main simulation step
+// compute visual angular speeds per planet for current sun mass
+function computePlanetSpeeds(sunMass) {
+  // returns array of angular speeds (rad/s) BEFORE VISUAL multiplier
+  return planets.map((p, i) => {
+    const r = state.orbitRadii[i];
+    return angularSpeed(sunMass, r);
+  });
+}
+
+// main animation loop
 function simulationStep(timestamp) {
   if (!lastTime) lastTime = timestamp;
   const dt = (timestamp - lastTime) / 1000; // seconds
   lastTime = timestamp;
   if (!simPaused) simTime += dt;
 
-  // center coordinates
-  const cx = canvas.width / (2 * devicePixelRatio);
-  const cy = canvas.height / (2 * devicePixelRatio);
+  // center coords
+  const cx = (canvas.width / (window.devicePixelRatio || 1)) / 2;
+  const cy = (canvas.height / (window.devicePixelRatio || 1)) / 2;
 
-  // draw background and orbits
+  // draw base
   drawBackground();
 
-  // Sun drawing in center (visual scale based on mass)
-  const sunRadius = BASE_SUN_RADIUS * Math.max(0.7, Math.min(2.2, Math.cbrt(simParams.sunMass / DEFAULT_SUN_MASS)));
+  // scale sun radius based on mass
+  const sunRadius = 26 * Math.max(0.8, Math.min(2.2, Math.cbrt(simParams.sunMass / DEFAULT_SUN_MASS)));
   drawSun(cx, cy, sunRadius);
 
-  // compute current orbital radii (kept fixed for logical behavior)
-  const earthR = state.earthOrbitRadius;
-  const moonR = state.moonOrbitRadius;
-
-  // compute angular speeds based on scaled masses
-  const wEarth = angularSpeed(simParams.sunMass, earthR);
-  const wMoon = angularSpeed(simParams.earthMass, moonR);
-
-  // advance angles (scaled visually using consistent factors)
-  if (!simPaused) {
-    state.earthAngle += wEarth * dt * EARTH_VISUAL_FACTOR;
-    state.moonAngle += wMoon * dt * MOON_VISUAL_FACTOR;
-  }
-
-  // Earth position
-  const earthX = cx + Math.cos(state.earthAngle) * earthR;
-  const earthY = cy + Math.sin(state.earthAngle) * earthR;
-
-  // Moon position relative to Earth
-  const moonX = earthX + Math.cos(state.moonAngle) * moonR;
-  const moonY = earthY + Math.sin(state.moonAngle) * moonR;
-
   // draw orbits
-  drawOrbit(cx, cy, earthR);
-  drawOrbit(earthX, earthY, moonR);
-
-  // draw earth and moon
-  const earthRadius = BASE_EARTH_RADIUS * Math.max(0.6, Math.cbrt(simParams.earthMass / DEFAULT_EARTH_MASS));
-  drawBody(earthX, earthY, earthRadius, "#7fbfff");
-
-  const moonRadius = BASE_MOON_RADIUS * Math.max(0.5, Math.cbrt(simParams.moonMass / DEFAULT_MOON_MASS));
-  drawBody(moonX, moonY, moonRadius, "#dcdcdc");
-
-  // small labels
-  ctx.fillStyle = "rgba(255,255,255,0.7)";
-  ctx.font = "12px Poppins, sans-serif";
-  ctx.fillText("Sun", cx + sunRadius + 6, cy - sunRadius - 6);
-  ctx.fillText("Earth", earthX + earthRadius + 6, earthY - 6);
-  ctx.fillText("Moon", moonX + moonRadius + 6, moonY - 6);
-
-  // compute theoretical periods (based on w) and visual periods (based on the animation multiplier)
-  const earthPeriodTheoretical = isFinite(wEarth) && wEarth !== 0 ? (2 * Math.PI) / wEarth : Infinity;
-  const moonPeriodTheoretical  = isFinite(wMoon) && wMoon !== 0 ? (2 * Math.PI) / wMoon : Infinity;
-
-  // visual angular speeds
-  const wEarthVisual = wEarth * EARTH_VISUAL_FACTOR;
-  const wMoonVisual  = wMoon  * MOON_VISUAL_FACTOR;
-
-  const earthPeriodVisual = isFinite(wEarthVisual) && wEarthVisual !== 0 ? (2 * Math.PI) / wEarthVisual : Infinity;
-  const moonPeriodVisual  = isFinite(wMoonVisual) && wMoonVisual !== 0 ? (2 * Math.PI) / wMoonVisual : Infinity;
-
-  // display results (guard Infinity/NaN)
-  function fmt(v) {
-    return isFinite(v) ? v.toFixed(2) : "—";
+  for (let i = 0; i < planets.length; i++) {
+    drawOrbit(cx, cy, state.orbitRadii[i]);
   }
 
-  resultP.textContent =
-    `Earth period — theoretical: ${fmt(earthPeriodTheoretical)}s, visual: ${fmt(earthPeriodVisual)}s · ` +
-    `Moon period — theoretical: ${fmt(moonPeriodTheoretical)}s, visual: ${fmt(moonPeriodVisual)}s`;
+  // compute base angular speeds given current sunMass
+  const baseSpeeds = computePlanetSpeeds(simParams.sunMass);
+
+  // advance and draw each planet
+  const periodsInfo = [];
+  for (let i = 0; i < planets.length; i++) {
+    const p = planets[i];
+    const r = state.orbitRadii[i];
+
+    // visual speed = base angular speed * visual multiplier
+    const wBase = baseSpeeds[i];
+    const wVisual = wBase * VISUAL_SPEED_MULT;
+
+    if (!simPaused) state.angles[i] += wVisual * dt;
+
+    const x = cx + Math.cos(state.angles[i]) * r;
+    const y = cy + Math.sin(state.angles[i]) * r;
+
+    // draw planet
+    drawPlanet(x, y, p.radius, p.color);
+
+    // draw label (small but visible)
+    drawLabel(p.name, x, y);
+
+    // compute theoretical & visual periods (in seconds)
+    const periodTheoretical = isFinite(wBase) && wBase !== 0 ? (2 * Math.PI) / wBase : Infinity;
+    const periodVisual = isFinite(wVisual) && wVisual !== 0 ? (2 * Math.PI) / wVisual : Infinity;
+
+    periodsInfo.push({ name: p.name, theoretical: periodTheoretical, visual: periodVisual });
+  }
+
+  // display results (only summary for clarity)
+  function fmt(v) { return isFinite(v) ? v.toFixed(2) + "s" : "—"; }
+
+  // show first 4 planets in short and indicate there are more
+  const firstFour = periodsInfo.slice(0, 4).map(pi => `${pi.name}: ${fmt(pi.visual)}`).join(" · ");
+  const lastFour  = periodsInfo.slice(4).map(pi => `${pi.name}: ${fmt(pi.visual)}`).join(" · ");
+
+  resultP.textContent = `Visual periods (approx): ${firstFour} · ${lastFour}`;
 
   // request next frame
   rafId = requestAnimationFrame(simulationStep);
@@ -422,29 +455,38 @@ function simulationStep(timestamp) {
 
 // Simulation control functions
 function startSimulation() {
-  // parse inputs and set simParams
+  // parse and apply sun mass multiplier
   simParams.sunMass = parseMassInput(massSunInput.value, DEFAULT_SUN_MASS);
-  simParams.earthMass = parseMassInput(massEarthInput.value, DEFAULT_EARTH_MASS);
-  simParams.moonMass = parseMassInput(massMoonInput.value, DEFAULT_MOON_MASS);
-
-  // map large inputs to visual space (ensure positive)
   if (simParams.sunMass <= 0) simParams.sunMass = DEFAULT_SUN_MASS;
-  if (simParams.earthMass <= 0) simParams.earthMass = DEFAULT_EARTH_MASS;
-  if (simParams.moonMass <= 0) simParams.moonMass = DEFAULT_MOON_MASS;
 
-  // keep fixed orbit radii (logical)
-  state.earthOrbitRadius = BASE_EARTH_ORBIT;
-  state.moonOrbitRadius = BASE_MOON_ORBIT;
+  // adjust orbit radii if canvas was resized (keeps proportions)
+  // keep the preconfigured radii but shrink if canvas small
+  const cw = canvas.width / (window.devicePixelRatio || 1);
+  const ch = canvas.height / (window.devicePixelRatio || 1);
+  const maxOrbit = Math.min(cw, ch) * 0.45;
+  // compute current max of defined radii
+  const definedMax = Math.max(...planets.map(p => p.orbitRadius));
+  const scaleDown = Math.min(1, maxOrbit / definedMax);
+
+  state.orbitRadii = planets.map(p => Math.max(30, Math.round(p.orbitRadius * scaleDown)));
 
   simPaused = false;
   simRunning = true;
   lastTime = 0;
-  // ensure RAF loop running
   if (!rafId) rafId = requestAnimationFrame(simulationStep);
+
   pauseBtn.textContent = "Pause";
 }
 
 function pauseSimulation() {
+  if (!simRunning) {
+    // still show a static frame — draw once
+    resizeCanvasToParent();
+    drawBackground();
+    const cx = (canvas.width / (window.devicePixelRatio || 1)) / 2;
+    const cy = (canvas.height / (window.devicePixelRatio || 1)) / 2;
+    drawSun(cx, cy, 26);
+  }
   simPaused = true;
   pauseBtn.textContent = "Resume";
 }
@@ -470,30 +512,24 @@ function resetSimulation() {
   simPaused = true;
   lastTime = 0;
   simTime = 0;
-  // reset state angles
-  state.earthAngle = 0;
-  state.moonAngle = 0;
-  // reset radii to base
-  state.earthOrbitRadius = BASE_EARTH_ORBIT;
-  state.moonOrbitRadius = BASE_MOON_ORBIT;
+  state.angles = planets.map(p => p.initialAngle);
+  state.orbitRadii = planets.map(p => p.orbitRadius);
   // clear canvas visually
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   resultP.textContent = "Simulation reset. Click 'Simulate Orbit' to start.";
   pauseBtn.textContent = "Pause";
   // redraw once
   resizeCanvasToParent();
   drawBackground();
-  const cx = canvas.width / (2 * devicePixelRatio);
-  const cy = canvas.height / (2 * devicePixelRatio);
-  drawSun(cx, cy, BASE_SUN_RADIUS);
-}
-
-function onCalculateClicked() {
-  startSimulation();
+  const cx = (canvas.width / (window.devicePixelRatio || 1)) / 2;
+  const cy = (canvas.height / (window.devicePixelRatio || 1)) / 2;
+  drawSun(cx, cy, 26);
 }
 
 // attach UI handlers
-calculateBtn.addEventListener("click", onCalculateClicked);
+calculateBtn.addEventListener("click", () => {
+  startSimulation();
+});
 
 pauseBtn.addEventListener("click", () => {
   if (!simRunning) return;
@@ -502,15 +538,15 @@ pauseBtn.addEventListener("click", () => {
 
 resetBtn.addEventListener("click", resetSimulation);
 
-// make Enter key on inputs trigger simulate
-[massSunInput, massEarthInput, massMoonInput].forEach(inp => {
-  inp.addEventListener("keydown", (e) => {
+// Enter key triggers simulate for the mass input
+if (massSunInput) {
+  massSunInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       startSimulation();
     }
   });
-});
+}
 
 // initialize option buttons to set textual values (0.25 times, etc.)
 document.querySelectorAll(".options-row").forEach(row => {
@@ -518,9 +554,7 @@ document.querySelectorAll(".options-row").forEach(row => {
     btn.addEventListener("click", (ev) => {
       // value applies to the preceding input element
       const input = row.previousElementSibling;
-      // set input value directly (same text as button)
-      input.value = btn.textContent;
-      // trigger a small animation (already handled above)
+      if (input) input.value = btn.textContent;
     });
   });
 });
