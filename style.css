@@ -174,7 +174,7 @@ body {
   margin: 6px 6px 6px 0;
   border-radius: 8px;
   padding: 6px 10px;
-  background: rgba(255,255,255,0.03);
+  background: blue;
   border: 1px solid rgba(255,255,255,0.06);
 }
 .option-btn:hover {
