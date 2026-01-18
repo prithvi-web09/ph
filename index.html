@@ -27,10 +27,10 @@
         <div class="group-names">
           <span>Prithvi Shetty</span>
           <span>Utkarsh Shirwadkar</span>
+          <span>Yash Shekhawat</span>
           <span>Payal Sharma</span>
           <span>Kashvi Sharma</span>
           <span>Yamini Sharma</span>
-          <span>Yash Shekhawat</span>
         </div>
       </div>
     </div>
@@ -44,55 +44,55 @@
     </div>
   </section>
 
- <!-- Gravitational Orbit Simulation -->
+  <!-- Fullscreen Gravitational Orbit Simulation -->
+  <section id="grav-fullscreen">
+    <video autoplay loop muted id="gravity-video">
+      <source src="gravity-bg.mp4" type="video/mp4" />
+    </video>
 
-  <!-- 🌌 Gravitational Orbit Simulation Popup -->
-<div id="grav-popup" class="popup" aria-hidden="true">
-  <video autoplay loop muted id="gravity-video">
-    <source src="gravity-bg.mp4" type="video/mp4" />
-  </video>
+    <div class="popup-content" role="dialog" aria-modal="true" aria-labelledby="grav-title">
+      <h2 id="grav-title">🪐 Gravitational Orbit Simulation</h2>
 
-  <div class="popup-content" role="dialog" aria-modal="true" aria-labelledby="grav-title">
-    <h2 id="grav-title">🪐 Gravitational Orbit Simulation</h2>
-
-    <div class="input-group">
-      <label>Mass of Sun:</label>
-      <input type="text" id="mass-sun" placeholder="Let be an integer or choose option" />
-      <div class="options-row">
-        <button class="option-btn">0.25 times</button>
-        <button class="option-btn">0.5 times</button>
-        <button class="option-btn">Original</button>
-        <button class="option-btn">1.5 times</button>
-        <button class="option-btn">2 times</button>
-        <button class="option-btn">3 times</button>
-      </div>
-
-    
-
-      <div class="sim-controls">
-        <button id="calculate">Simulate Orbit</button>
-        <button id="pause-resume">Pause</button>
-        <button id="reset-sim">Reset</button>
-      </div>
-
-      <p id="result"></p>
-    </div>
-
-    <!-- Canvas for orbits -->
-    <div class="canvas-wrap">
-      <canvas id="orbit-canvas" width="1000" height="600" aria-label="Orbit simulation canvas"></canvas>
-    </div>
-
-    <button id="close-popup">Close</button>
-  </div>
+      <div class="input-group">
+        <label>Mass of Sun:</label>
+        <input type="text" id="mass-sun" placeholder="Enter mass or choose preset" />
+        <div class="options-row">
+          <button class="option-btn">0.25 times</button>
+          <button class="option-btn">0.5 times</button>
+          <button class="option-btn">Original</button>
+          <button class="option-btn">1.5 times</button>
+          <button class="option-btn">2 times</button>
+          <button class="option-btn">3 times</button>
+        </div>
+      <div class="info-scroll">
+  <p>Planetary motion is governed by the law of universal gravitation.</p>
+  <p>Each planet orbits the Sun due to gravitational pull.</p>
+  <p>Mercury, being closest to the Sun, completes its orbit fastest.</p>
+  <p>Venus has a slightly elliptical orbit around the Sun.</p>
+  <p>Earth maintains a nearly circular orbit, which stabilizes seasons.</p>
+  <p>Mars has a longer orbital period than Earth due to distance.</p>
+  <p>Jupiter and Saturn are massive planets with strong gravitational influence.</p>
 </div>
+  
+        <div class="sim-controls">
+          <button id="calculate">Simulate Orbit</button>
+          <button id="pause-resume">Pause</button>
+          <button id="reset-sim">Reset</button>
+        </div>
+
+        <p id="result"></p>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="orbit-canvas" aria-label="Orbit simulation canvas"></canvas>
+      </div>
+    </div>
+  </section>
 
   <!-- GSAP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
-
   <script src="script.js"></script>
 </body>
 </html>
-
