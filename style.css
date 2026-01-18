@@ -143,15 +143,17 @@
   }
   .info-scroll {
   position: absolute;
-  top: 10vh;
-  left: 10px;
-  width: 250px;
-  max-height: 100%;
-  color: #cfeee6;
-  font-size: 0.95rem;
+  right: 20px;
+  top: 120px;
+  width: 260px;
+  height: calc(100% - 160px);
+  overflow: hidden;
+  color: #ffffffcc;
+  font-size: 14px;
+  line-height: 1.6;
   pointer-events: none;
-  z-index: 5;
 }
+
 
 
 .info-scroll p {
@@ -274,8 +276,21 @@
   }
 
   /* 🌐 Mobile Responsive */
-  @media (max-width: 600px) {
-    .logo { font-size:28px; }
-    #page1 h1 { font-size:1.8rem; }
-    .sec-container h1 { font-size:1rem; }
+  @media (max-width: 768px) {
+  .info-scroll {
+    right: 10px;
+    top: auto;
+    bottom: 10px;
+
+    width: 90%;
+    height: 120px;
+
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    padding: 10px;
+
+    pointer-events: none;
   }
+}
+
