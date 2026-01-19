@@ -148,7 +148,7 @@
   width: 260px;
   height: calc(100% - 160px);
   overflow: hidden;
-  color: #ffffffcc;
+  color: pink;
   font-size: 14px;
   line-height: 1.6;
   pointer-events: none;
@@ -301,6 +301,7 @@
     pointer-events: none;
   }
 }
+
 
 
 
