@@ -146,10 +146,10 @@
   right: 20px;
   top: 120px;
   width: 260px;
-  height: calc(100% - 160px);
+  min-height: calc(100% - 160px);
   overflow: hidden;
-  color: pink;
-  font-size: 14px;
+  color:pink;
+  font-size: 20px;
   line-height: 1.6;
   pointer-events: none;
 }
@@ -301,7 +301,116 @@
     pointer-events: none;
   }
 }
-
-
-
+#magnetic-fullscreen{
+  position: fixed;
+  inset:0;
+  display: none;
+  width: 100vw;
+  height: 100vh;
+  background-color: #0b0b0b;
+  z-index: 50;
+  overflow: hidden;
+}
+#magnetic-fullscreen .popup-content{
+  position:relative;
+  width: 100%;
+  height: 100%;
+  background: rgba(10,10,20,0.45);
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  overflow: hidden;
+}
+#magnetic-title{
+  text-align: center;
+  font-size: 2.5rem;
+  color: rgba(0, 255, 204, 0.6);
+  padding-top: 2vh;
+  text-shadow: 0 0 12px rgba(0, 255, 204, 0.6);
+}
+#magnetic-fullscreen .input-group{
+  max-width: 320px;
+  margin: 0 auto;
+  font-size: 1.5rem;
+  text-align: center;
+  gap: 30px;
+}
+#current-slider{
+  width: 100%;
+  padding: 10px;
+  border-radius: 12px;
+  text-align: center;
+  border: 2px solid #00ffcc;
+  font-size: 1.2rem;
+}
+#current-value{
+  font-size: 2rem;
+  color: pink;
+}
+#magnetic-fullscrren .option-row{
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 5vw;
+}
+#magnetic-fullscreen .option-btn {
+  font-size: 2rem;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  border: 1px solid white;
+  border-radius: 20px;
+  padding: 10px 20px;
+}
+#magnetic-fullscreen .option-btn:hover {
+  background: #444;
+}
+#magnetic-fullscreen .magnetic-info{
+  position: absolute;
+  right: 20px;
+  top: 15px;
+  max-width: 320px;
+  height: calc(100%-160px);
+  overflow: hidden;
+  font-size: 2rem;
+  overflow: hidden;
+  color: plum;
+  gap: 5vh;
+}
+.canvas-wrap{
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+#magnetic-canvas{
+  width: 62%;
+  height: 95%;
+   background: linear-gradient(
+    180deg,
+    rgba(5, 5, 10, 0.6),
+    rgba(2, 2, 6, 0.6)
+  );
+  border: 1px solid white;
+  border-radius: 30px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+}
+#magnetic-fullscreen .sim-controls button{
+  font-size: 2 rem;
+  border: 2px solid #00ffcc;
+  border-radius: 30px;
+  padding: 8px 16px;
+  font-weight: 600;
+}
+#magnetic-fullscreen .sim-controls button:hover{
+  background: pink;
+}
+#magnetic-title {
+    font-size: 2rem;
+  }
+#magnetic-fullscreen .input-group {
+    max-width: 100%;
+  }
 
