@@ -65,7 +65,7 @@
           <button class="option-btn">3 times</button>
         </div>
       <div class="info-scroll">
-  <p>This simulation shows how planets move in stable or unstable orbits due to the Sun’s gravitational pull.</p>
+   <p>This simulation shows how planets move in stable or unstable orbits due to the Sun’s gravitational pull.</p>
   <p>It helps us understand how changing the Sun’s mass directly affects the distance and shape of planetary orbits.</p>
   <p>We can observe that a stronger gravitational force pulls planets closer and makes their orbits tighter.</p>
   <p>When the Sun’s mass decreases, planets move farther away, showing weaker gravitational attraction.</p>
@@ -88,6 +88,34 @@
       </div>
     </div>
   </section>
+  <section id = "magnetic-fullscreen">
+    <div class="popup-content" role="dialog" aria-modal="true" aria-labelledby="magnetic-title">
+      <h2 id="magnetic-title">🧲 Magnetic Field around a Current-Carrying wire</h2>
+      <div class="input-group">
+        <label>Current Strength (I)</label>
+        <input type="range" id="current-slider" min="1" max="30" value="5" />
+        <span id="current-value">5 A</span>
+      <div class="magnetic-info">
+      <p>This simulation helps students understand how a staright current-carrying conductor produces a magnetic field.</p>
+      <p>It visually demonstrates that magnetic field lines form concentric circles around the wire.</p> 
+      <p>The simulation helps explain the Right-Hand Thumb Rule in an interactive way.</p>
+      <p>This simulation shows that magnetic field strength decreases with increasing distance from the wire.</p>
+      <p>Students can verify that magnetic field strength is inversely proportional to distance from the conductor.</p>
+      <p>The effect of increasing current on magnetic field strength is shown visually and quantitatively.</p>
+      <p>Students can observe how magnetic fields behave symmetrically around a straight conductor.</p>
+      <p>It helps students connect theoretical concepts with practical visualization.</p>
+      <p></p>
+      </div>
+      <div class="sim-controls">
+        <button id="start-magnetic-sim">Start Simulation</button>
+      
+      </div>
+    </div>
+    <div class="canvas-wrap">
+      <canvas id="magnetic-canvas" aria-label="Magnetic Field simulation canvas"></canvas>
+    </div>
+  </div>
+</section>
 
   <!-- GSAP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -96,4 +124,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
