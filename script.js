@@ -566,3 +566,265 @@ function startMagneticInfoScroll() {
 document.getElementById("start-magnetic-sim").onclick = () => {
   startMagneticInfoScroll();
 };
+// ================================
+// Double Slit Interference Simulation
+// ================================
+
+const interferenceSection = document.getElementById("interference-fullscreen");
+const interferenceCanvas = document.getElementById("interference-canvas");
+const iCtx = interferenceCanvas.getContext("2d");
+
+const wavelengthSlider = document.getElementById("wavelength-slider");
+const slitSlider = document.getElementById("slit-slider");
+const phaseSlider = document.getElementById("phase-slider");
+
+const wavelengthValue = document.getElementById("wavelength-value");
+const slitValue = document.getElementById("slit-value");
+const phaseValue = document.getElementById("phase-value");
+
+let wavelength = 550;
+let slitDistance = 0.5;
+let phaseDiff = 0;
+
+let runningInterference = false;
+let time = 0;
+let animationInterference;
+
+// Resize canvas
+function resizeInterferenceCanvas() {
+  const rect = interferenceCanvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+
+  interferenceCanvas.width = rect.width * dpr;
+  interferenceCanvas.height = rect.height * dpr;
+
+  interferenceCanvas.style.width = rect.width + "px";
+  interferenceCanvas.style.height = rect.height + "px";
+
+  iCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+window.addEventListener("resize", resizeInterferenceCanvas);
+
+// ------------------ Wavelength Color ------------------
+function wavelengthToColor(wl) {
+  let r=0,g=0,b=0;
+
+  if (wl >= 380 && wl < 440) { r = -(wl-440)/(440-380); b = 1; }
+  else if (wl < 490) { g=(wl-440)/(490-440); b=1; }
+  else if (wl < 510) { g=1; b=-(wl-510)/(510-490); }
+  else if (wl < 580) { r=(wl-510)/(580-510); g=1; }
+  else if (wl < 645) { r=1; g=-(wl-645)/(645-580); }
+  else { r=1; }
+
+  r=Math.round(r*255);
+  g=Math.round(g*255);
+  b=Math.round(b*255);
+
+  return `rgb(${r},${g},${b})`;
+}
+
+// ------------------ Draw Experiment ------------------
+function drawExperiment() {
+
+  const w = interferenceCanvas.clientWidth;
+  const h = interferenceCanvas.clientHeight;
+
+  const laserX = 80;
+  const barrierX = w * 0.4;
+  const screenX = w * 0.85;
+
+  const centerY = h/2;
+
+  const slitGap = slitDistance * 120;
+
+  const slit1 = centerY - slitGap/2;
+  const slit2 = centerY + slitGap/2;
+
+  const color = wavelengthToColor(wavelength);
+
+  // Laser
+  iCtx.strokeStyle = color;
+  iCtx.lineWidth = 3;
+  iCtx.beginPath();
+  iCtx.moveTo(laserX, centerY);
+  iCtx.lineTo(barrierX, centerY);
+  iCtx.stroke();
+
+  // Barrier
+  iCtx.fillStyle = "#444";
+  iCtx.fillRect(barrierX-5,0,10,h);
+
+  // Slits
+  iCtx.clearRect(barrierX-5,slit1-10,10,20);
+  iCtx.clearRect(barrierX-5,slit2-10,10,20);
+
+  // Screen
+  iCtx.fillStyle="#ccc";
+  iCtx.fillRect(screenX,0,6,h);
+
+  // Wave circles from slits
+  drawWave(barrierX,slit1,color);
+  drawWave(barrierX,slit2,color);
+
+  // Interference pattern
+  drawFringes(screenX,centerY,color);
+}
+
+// ------------------ Wave Propagation ------------------
+function drawWave(x,y,color){
+
+  for(let i=0;i<8;i++){
+
+    const r = (time*80 + i*60)%500;
+
+    iCtx.beginPath();
+    iCtx.arc(x,y,r,0,Math.PI*2);
+
+    iCtx.strokeStyle=color;
+    iCtx.globalAlpha=0.15;
+    iCtx.stroke();
+
+  }
+
+  iCtx.globalAlpha=1;
+}
+
+// ------------------ Interference Fringes ------------------
+function drawFringes(screenX,centerY,color){
+
+  const h = interferenceCanvas.clientHeight;
+
+  const lambda = wavelength/1000;
+  const d = slitDistance;
+  const D = 3;
+
+  const fringeSpacing = (lambda*D)/d;
+
+  for(let y=0;y<h;y++){
+
+    const phase = (2*Math.PI*(y-centerY))/(fringeSpacing*200);
+
+    const intensity = Math.cos(phase + phaseDiff*Math.PI/180 + time*2);
+
+    const brightness = Math.pow(intensity,2);
+
+    const r = brightness*255;
+
+    iCtx.fillStyle = `rgba(${r},${r},${r},0.9)`;
+    iCtx.fillRect(screenX+8,y,20,1);
+
+  }
+
+  // Fringe spacing text
+  iCtx.fillStyle="#00ffcc";
+  iCtx.font="14px Poppins";
+  iCtx.fillText(`Fringe spacing ≈ ${fringeSpacing.toFixed(2)} mm`,screenX-60,30);
+
+}
+
+// ------------------ Animation ------------------
+function animateInterference(){
+
+  if(!runningInterference) return;
+
+  iCtx.clearRect(0,0,interferenceCanvas.width,interferenceCanvas.height);
+
+  drawExperiment();
+
+  time += 0.016;
+
+  animationInterference=requestAnimationFrame(animateInterference);
+}
+
+// ------------------ Start Simulation ------------------
+function startInterference(){
+
+  runningInterference=true;
+
+  resizeInterferenceCanvas();
+
+  cancelAnimationFrame(animationInterference);
+
+  animateInterference();
+
+}
+
+// ------------------ Slider Controls ------------------
+wavelengthSlider.addEventListener("input",()=>{
+
+  wavelength=parseFloat(wavelengthSlider.value);
+  wavelengthValue.textContent=`${wavelength} nm`;
+
+});
+
+slitSlider.addEventListener("input",()=>{
+
+  slitDistance=parseFloat(slitSlider.value);
+  slitValue.textContent=`${slitDistance} mm`;
+
+});
+
+phaseSlider.addEventListener("input",()=>{
+
+  phaseDiff=parseFloat(phaseSlider.value);
+  phaseValue.textContent=`${phaseDiff}°`;
+
+});
+
+// ------------------ Start Button ------------------
+document.getElementById("start-interference-sim").onclick=()=>{
+
+  startInterference();
+
+};
+
+// ------------------ Open Simulation ------------------
+document.querySelector(".sec-4").onclick=()=>{
+
+  interferenceSection.style.display="flex";
+
+  gsap.to(window,{
+    scrollTo:interferenceSection,
+    duration:1,
+    onComplete:()=>{
+      resizeInterferenceCanvas();
+      startInterference();
+    }
+  });
+
+};
+
+// Close button
+const closeInterference=document.createElement("button");
+
+closeInterference.innerText="Close Simulation";
+
+Object.assign(closeInterference.style,{
+  position:"absolute",
+  top:"20px",
+  right:"20px",
+  padding:"10px 15px",
+  background:"#00ffcc",
+  border:"none",
+  borderRadius:"8px",
+  cursor:"pointer",
+  fontWeight:"600",
+  zIndex:10
+});
+
+interferenceSection.appendChild(closeInterference);
+
+closeInterference.onclick=()=>{
+
+  runningInterference=false;
+
+  cancelAnimationFrame(animationInterference);
+
+  gsap.to(window,{
+    scrollTo:0,
+    duration:1,
+    onComplete:()=>interferenceSection.style.display="none"
+  });
+
+};
