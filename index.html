@@ -115,7 +115,39 @@
       <canvas id="magnetic-canvas" aria-label="Magnetic Field simulation canvas"></canvas>
     </div>
   </div>
-</section>
+  </section>
+  <section id ="interference-fullscreen">
+    <div class="popup-content" role="dialog" aria-modal="true" aria-labelledby="interference-title">
+      <h2 id="interference-title">🔦 Double Slit Interference</h2>
+      <div class="input-group">
+        <label>Wavelength (λ)</label>
+        <input type="range" id="wavelength-slider" min="400" max="700" value="550" />
+        <span id="wavelength-value">550 nm</span>
+        <label>Slit Seperation</label>
+        <input type="range" id="slit-slider" min="0.1" max="1" step="0.1" value="0.5" />
+        <span id="slit-value">0.5 mm</span>
+        <label>Phase Difference</label>
+        <input type="range" id="phase-slider" min="0" max="360" value="0" />
+        <span id="phase-value">0°</span>
+        <div class="interference-info">
+          <p>This simulation visually demonstrates the principle of superposition in wave interference.</p>
+          <p>It helps students understand how constructive and destructive interference patterns form on the screen.</p>
+          <p>By adjusting wavelength, slit separation, and phase difference, students can see how these factors affect the interference pattern.</p>
+          <p>The simulation allows students to explore the relationship between wavelength and fringe spacing.</p>
+          <p>Students can observe how increasing slit separation leads to more closely spaced fringes.</p>
+          <p>The effect of phase difference on the intensity and position of interference fringes is shown interactively.</p>
+          <p>This simulation helps students connect theoretical concepts of wave interference with visual patterns they can manipulate.</p>
+        </div>
+        <div class="sim-controls">
+          <button id="start-interference-sim">Start Simulation</button>
+        </div>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="interference-canvas" aria-label="Magnetic Field simulation canvas"></canvas>
+      </div>
+    </div>
+  </section>
+
 
   <!-- GSAP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
