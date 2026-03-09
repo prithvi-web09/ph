@@ -426,17 +426,15 @@
   overflow: hidden;
 }
 #interference-fullscreen .popup-content{
-  position:relative;
-  width: 100%;
-  min-height: 100%;
-  padding-right: 360px;
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  justify-content:space-between;
+  padding:30px;
+  gap:20px;
   background: rgba(10,10,20,0.45);
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  overflow: hidden;
 }
 #interference-title{
   text-align: center;
@@ -446,12 +444,10 @@
   text-shadow: 0 0 12px rgba(0, 255, 204, 0.6);
 }
 #interference-fullscreen .input-group{
-  width: 260px;
-  margin-left: 40px;
-  margin-top: 120px;
-  font-size: 1.3rem;
-  text-align: center;
-  gap: 25px;
+  width:260px;
+  display:flex;
+  flex-direction:column;
+  gap:15px;
 }
 #wavelength-slider{
   width: 100%;
@@ -523,5 +519,6 @@
   border-radius: 30px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
 }
+
 
 
