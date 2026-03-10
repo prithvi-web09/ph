@@ -369,22 +369,26 @@
 #magnetic-fullscreen .magnetic-info{
   position: absolute;
   right: 20px;
-  top: 15px;
-  max-width: 320px;
-  height: calc(100% - 160px);
+  top: 120px;
+  width: 260px;
+  min-height: calc(100% - 160px);
   overflow: hidden;
-  font-size: 2rem;
-  overflow: hidden;
-  color: plum;
-  gap: 5vh;
+  color:pink;
+  font-size: 20px;
+  line-height: 1.6;
+  pointer-events: none;
 }
-.canvas-wrap{
+#magnetic-fullscreen .magnetic-info p{
+  margin-bottom: 1rem;
+}
+.magnetic-canvas-wrap{
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: 100%;
+  margin-left: 20px;
 }
 #magnetic-canvas{
   width: 62%;
@@ -394,9 +398,6 @@
     rgba(5, 5, 10, 0.6),
     rgba(2, 2, 6, 0.6)
   );
-  border: 1px solid white;
-  border-radius: 30px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
 }
 #magnetic-fullscreen .sim-controls button{
   font-size: 2 rem;
@@ -426,15 +427,14 @@
   overflow: hidden;
 }
 #interference-fullscreen .popup-content{
-  width:100%;
-  height:100%;
-  display:flex;
-  flex-direction:row;
-  align-items:center;
-  justify-content:space-between;
-  padding:30px;
-  gap:20px;
+  position:relative;
+  width: 100%;
+  min-height: 100%;
   background: rgba(10,10,20,0.45);
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+  overflow: hidden;
 }
 #interference-title{
   text-align: center;
@@ -444,10 +444,12 @@
   text-shadow: 0 0 12px rgba(0, 255, 204, 0.6);
 }
 #interference-fullscreen .input-group{
-  width:260px;
-  display:flex;
-  flex-direction:column;
-  gap:15px;
+  width: 260px;
+  margin-left: 40px;
+  margin-top: 120px;
+  font-size: 1.3rem;
+  text-align: center;
+  gap: 25px;
 }
 #wavelength-slider{
   width: 100%;
@@ -488,16 +490,20 @@
 #interference-fullscreen .interference-info{
   position: absolute;
   right: 20px;
-  top: 15px;
-  width: 300px;
-  height: calc(100% - 160px);
+  top: 120px;
+  width: 260px;
+  min-height: calc(100% - 160px);
   overflow: hidden;
-  font-size: 1.2rem;
-  overflow: hidden;
-  color: plum;
-  margin-left:30px;
+  color:pink;
+  font-size: 20px;
+  line-height: 1.6;
+  pointer-events: none;
 }
-.canvas-wrap{
+#interference-fullscreen .interference-info p{
+  margin-bottom: 1rem;
+}
+
+.interference-canvas-wrap{
   flex: 1;
   display: flex;
   align-items: center;
@@ -506,8 +512,8 @@
   height: 100%;
 }
 #interference-canvas{
-  width: 600px;
-  height: 90%;
+  width: 62%;
+  height: 95%;
   min-height: 500px;
   margin-left: 40px;
    background: linear-gradient(
@@ -515,10 +521,4 @@
     rgba(5, 5, 10, 0.6),
     rgba(2, 2, 6, 0.6)
   );
-  border: 1px solid white;
-  border-radius: 30px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
 }
-
-
-
