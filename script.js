@@ -244,7 +244,7 @@ function startInfoScroll() {
   gsap.fromTo(infoContainer,
     { y: window.innerHeight },
     { y: -totalHeight,
-      duration: 40,
+      duration: 120,
       ease: "linear",
       repeat: -1
     }
@@ -828,3 +828,19 @@ closeInterference.onclick=()=>{
   });
 
 };
+function startInfoScrollInterference() {
+  const infoContainer = document.querySelector(".interference-info");
+  if (!infoContainer) return;
+
+  const totalHeight = infoContainer.scrollHeight;
+
+  gsap.fromTo(infoContainer,
+    { y: window.innerHeight },
+    { y: -totalHeight,
+      duration: 180,
+      ease: "linear",
+      repeat: -1
+    }
+  );
+}
+
