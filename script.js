@@ -791,7 +791,6 @@ document.querySelector(".sec-4").onclick=()=>{
     onComplete:()=>{
       resizeInterferenceCanvas();
       startInterference();
-      startInterInfoScroll();
     }
   });
 
@@ -850,5 +849,4 @@ function startInterInfoScroll() {
     }
   );
 }
-
 
