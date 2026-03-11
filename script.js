@@ -776,6 +776,7 @@ phaseSlider.addEventListener("input",()=>{
 document.getElementById("start-interference-sim").onclick=()=>{
 
   startInterference();
+  startInterInfoScroll();
 
 };
 
@@ -828,16 +829,21 @@ closeInterference.onclick=()=>{
   });
 
 };
-function startInfoScrollInterference() {
-  const infoContainer = document.querySelector(".interference-info");
+function startInterInfoScroll() {
+  const infoContainer = document.querySelector("#interference-fullscreen .interference-info");
   if (!infoContainer) return;
+
+
+  gsap.killTweensOf(infoContainer);
 
   const totalHeight = infoContainer.scrollHeight;
 
+  // Animate from below screen to completely above
   gsap.fromTo(infoContainer,
     { y: window.innerHeight },
-    { y: -totalHeight,
-      duration: 180,
+    {
+      y: -totalHeight,
+      duration: 40,   // Adjust duration for scroll speed
       ease: "linear",
       repeat: -1
     }
